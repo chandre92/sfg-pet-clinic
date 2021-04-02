@@ -3,10 +3,7 @@ package guru.springframework.sfgpetclinic.services.map;
 import guru.springframework.sfgpetclinic.model.BaseEntity;
 import guru.springframework.sfgpetclinic.services.CrudService;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public abstract class AbstractMapService<T extends BaseEntity> implements CrudService<T, Long> {
     protected Map<Long, T> map = new HashMap<>();
@@ -23,7 +20,11 @@ public abstract class AbstractMapService<T extends BaseEntity> implements CrudSe
 
     @Override
     public T save(T object) {
-        return map.put(object.getId(), object);
+        if (object != null && object.getId() == null) {
+            object.setId(getNextId());
+            map.put(object.getId(), object);
+        }
+        return object;
     }
 
     @Override
@@ -34,5 +35,9 @@ public abstract class AbstractMapService<T extends BaseEntity> implements CrudSe
     @Override
     public void delete(T object) {
         map.remove(object.getId());
+    }
+
+    private Long getNextId() {
+        return map.isEmpty() ? 1 : Collections.max(map.keySet()) + 1;
     }
 }
