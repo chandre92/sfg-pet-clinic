@@ -20,8 +20,11 @@ public abstract class AbstractMapService<T extends BaseEntity> implements CrudSe
 
     @Override
     public T save(T object) {
-        if (object != null && object.getId() == null) {
-            object.setId(getNextId());
+        if (object != null) {
+            if (object.getId() == null) {
+                object.setId(getNextId());
+            }
+
             map.put(object.getId(), object);
         }
         return object;
