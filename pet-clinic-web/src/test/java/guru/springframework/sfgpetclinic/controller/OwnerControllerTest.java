@@ -64,4 +64,21 @@ class OwnerControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.view().name("notimplemented"));
     }
+
+    @Test
+    void showOwners() throws Exception {
+        // Arrange
+        Long ownerId = 123L;
+        Owner owner = Owner.builder().id(ownerId).build();
+
+        when(ownerServiceMock.findById(ownerId)).thenReturn(owner);
+
+        // Act && Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/" + ownerId))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name("owner/ownerDetails"))
+                .andExpect(MockMvcResultMatchers.model().attribute("owner", owner));
+        verify(ownerServiceMock).findById(ownerId);
+        verifyNoMoreInteractions(ownerServiceMock);
+    }
 }
