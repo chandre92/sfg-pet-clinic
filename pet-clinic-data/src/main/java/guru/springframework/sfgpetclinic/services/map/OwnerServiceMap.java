@@ -7,7 +7,9 @@ import guru.springframework.sfgpetclinic.services.PetTypeService;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Profile({"default", "map"})
@@ -43,5 +45,12 @@ public class OwnerServiceMap extends AbstractMapService<Owner> implements OwnerS
             }
         }
         return super.save(object);
+    }
+
+    @Override
+    public List<Owner> findAllByLastName(String lastName) {
+        return findAll().stream()
+                .filter(owner -> owner.getLastName().contains(lastName))
+                .collect(Collectors.toList());
     }
 }
