@@ -135,4 +135,65 @@ class OwnerControllerTest {
         verify(ownerServiceMock).findById(ownerId);
         verifyNoMoreInteractions(ownerServiceMock);
     }
+
+    @Test
+    void initCreateForm() throws Exception {
+        // Act && Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/new"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name(OwnerController.CREATE_OR_UPDATE_OWNER_FORM))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+        verifyNoInteractions(ownerServiceMock);
+    }
+
+    @Test
+    void processCreateForm() throws Exception {
+        // Arrange
+        Long ownerId = 1234L;
+
+        when(ownerServiceMock.save(any())).thenReturn(Owner.builder().id(ownerId).build());
+
+        // Act && Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/new"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + ownerId))
+                // will have the same Owner instance that we get on processCreateForm entry
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+
+        verify(ownerServiceMock).save(any());
+        verifyNoMoreInteractions(ownerServiceMock);
+    }
+
+    @Test
+    void initUpdateForm() throws Exception {
+        // Arrange
+        Long ownerId = 123L;
+        when(ownerServiceMock.findById(ownerId)).thenReturn(Owner.builder().id(ownerId).build());
+
+        // Act && Assert
+        mockMvc.perform(MockMvcRequestBuilders.get("/owners/" + ownerId + "/edit"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.view().name(OwnerController.CREATE_OR_UPDATE_OWNER_FORM))
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+        verify(ownerServiceMock).findById(ownerId);
+        verifyNoMoreInteractions(ownerServiceMock);
+    }
+
+    @Test
+    void processUpdateForm() throws Exception {
+        // Arrange
+        Long ownerId = 1234L;
+
+        when(ownerServiceMock.save(any())).thenReturn(Owner.builder().id(ownerId).build());
+
+        // Act && Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/owners/" + ownerId + "/edit"))
+                .andExpect(MockMvcResultMatchers.status().is3xxRedirection())
+                .andExpect(MockMvcResultMatchers.view().name("redirect:/owners/" + ownerId))
+                // will have the same Owner instance that we get on processCreateForm entry
+                .andExpect(MockMvcResultMatchers.model().attributeExists("owner"));
+
+        verify(ownerServiceMock).save(any());
+        verifyNoMoreInteractions(ownerServiceMock);
+    }
 }
